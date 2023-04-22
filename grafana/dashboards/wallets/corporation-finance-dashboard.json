@@ -1,0 +1,1750 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "description": "",
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 85,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "center",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 2,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 23,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\n  from_unixtime($__from/1000, '%Y %M %D') AS \"Start\",\n  from_unixtime($__to/1000, '%Y %M %D') AS \"End\"\nFROM aadiscordbot_authbotconfiguration\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aadiscordbot_authbotconfiguration",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": []
+          }
+        ],
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 17,
+          "w": 5,
+          "x": 0,
+          "y": 2
+        },
+        "id": 2,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT \nT7.`character_name` as metric,\nsum(`invoices_invoice`.`amount`) as \"Total Contributions\"\nFROM `invoices_invoice`\nINNER JOIN `eveonline_evecharacter` ON (`invoices_invoice`.`character_id` = `eveonline_evecharacter`.`id`) \nLEFT OUTER JOIN `authentication_characterownership` ON (`eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`) \nLEFT OUTER JOIN `auth_user` ON (`authentication_characterownership`.`user_id` = `auth_user`.`id`) \nLEFT OUTER JOIN `authentication_userprofile` ON (`auth_user`.`id` = `authentication_userprofile`.`user_id`) \nLEFT OUTER JOIN `eveonline_evecharacter` T7 ON (`authentication_userprofile`.`main_character_id` = T7.`id`) \nWHERE $__timeFilter(`invoices_invoice`.`due_date`) and T7.`corporation_id` in ($corp)\nGROUP BY T7.`character_name`\norder by 2 desc",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Contributions Per Main",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 5,
+          "y": 2
+        },
+        "id": 5,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\r\n   member_count\r\nFROM eveonline_evecorporationinfo\r\nWHERE corporation_id = $corp\r\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Total Members",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 5,
+          "x": 8,
+          "y": 2
+        },
+        "id": 4,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT \nsum(`invoices_invoice`.`amount`) as \"Total Contributions\"\nFROM `invoices_invoice`\nINNER JOIN `eveonline_evecharacter` ON (`invoices_invoice`.`character_id` = `eveonline_evecharacter`.`id`) \nLEFT OUTER JOIN `authentication_characterownership` ON (`eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`) \nLEFT OUTER JOIN `auth_user` ON (`authentication_characterownership`.`user_id` = `auth_user`.`id`) \nLEFT OUTER JOIN `authentication_userprofile` ON (`auth_user`.`id` = `authentication_userprofile`.`user_id`) \nLEFT OUTER JOIN `eveonline_evecharacter` T7 ON (`authentication_userprofile`.`main_character_id` = T7.`id`) \nWHERE $__timeFilter(`invoices_invoice`.`due_date`) and T7.`corporation_id` in ($corp)\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Total Contributions",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 15000000
+                },
+                {
+                  "color": "green",
+                  "value": 25000000
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 11,
+          "x": 13,
+          "y": 2
+        },
+        "id": 9,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "Sum(`corptools_characteraudit`.`balance`)"
+            }
+          ]
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \n  Avg(i.isk) as \"Average\",\n  Min(i.isk) as \"Min\",\n  Max(i.isk) as \"Max\"\nFrom\n(SELECT \n  Sum(`corptools_characteraudit`.`balance`) as isk\nFROM \n  `eveonline_evecharacter` \n  LEFT OUTER JOIN `authentication_characterownership` ON (\n    `eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`\n  ) \n  LEFT OUTER JOIN `corptools_characteraudit` ON (\n    `eveonline_evecharacter`.`id` = `corptools_characteraudit`.`character_id`\n  ) \n  LEFT OUTER JOIN `auth_user` ON (\n    `authentication_characterownership`.`user_id` = `auth_user`.`id`\n  ) \n  LEFT OUTER JOIN `authentication_userprofile` ON (\n    `auth_user`.`id` = `authentication_userprofile`.`user_id`\n  ) \n  LEFT OUTER JOIN `eveonline_evecharacter` T7 ON (\n    `authentication_userprofile`.`main_character_id` = T7.`id`\n  ) \nWhere \n  T7.`corporation_id` in ($corp)\nGroup By \n  T7.`character_id`) i",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Isk Per Main",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10000000
+                },
+                {
+                  "color": "green",
+                  "value": 15000000
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 5,
+          "x": 13,
+          "y": 5
+        },
+        "id": 6,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT \nsum(`invoices_invoice`.`amount`)/$members FROM `invoices_invoice`\nINNER JOIN `eveonline_evecharacter` ON (`invoices_invoice`.`character_id` = `eveonline_evecharacter`.`id`) \nLEFT OUTER JOIN `authentication_characterownership` ON (`eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`) \nLEFT OUTER JOIN `auth_user` ON (`authentication_characterownership`.`user_id` = `auth_user`.`id`) \nLEFT OUTER JOIN `authentication_userprofile` ON (`auth_user`.`id` = `authentication_userprofile`.`user_id`) \nLEFT OUTER JOIN `eveonline_evecharacter` T7 ON (`authentication_userprofile`.`main_character_id` = T7.`id`) \nWHERE $__timeFilter(`invoices_invoice`.`due_date`) and T7.`corporation_id` in ($corp)\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Total Contributions Per Member",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 20
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 27,
+          "w": 6,
+          "x": 18,
+          "y": 5
+        },
+        "id": 14,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": false,
+              "displayName": "Total Isk"
+            }
+          ]
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \n  i.name as \"Main\",\n  i.isk as \"Total Isk\"\nFrom\n(SELECT \n  T7.`character_name` as name,\n  Sum(`corptools_characteraudit`.`balance`) as isk\nFROM \n  `eveonline_evecharacter` \n  LEFT OUTER JOIN `authentication_characterownership` ON (\n    `eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`\n  ) \n  LEFT OUTER JOIN `corptools_characteraudit` ON (\n    `eveonline_evecharacter`.`id` = `corptools_characteraudit`.`character_id`\n  ) \n  LEFT OUTER JOIN `auth_user` ON (\n    `authentication_characterownership`.`user_id` = `auth_user`.`id`\n  ) \n  LEFT OUTER JOIN `authentication_userprofile` ON (\n    `auth_user`.`id` = `authentication_userprofile`.`user_id`\n  ) \n  LEFT OUTER JOIN `eveonline_evecharacter` T7 ON (\n    `authentication_userprofile`.`main_character_id` = T7.`id`\n  ) \nWhere \n  T7.`corporation_id` in ($corp)\nGroup By \n  T7.`character_id`) i\nwhere i.isk < $isk_min",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Mains with less than Cutoff",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 5,
+          "y": 6
+        },
+        "id": 8,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT \n  count(distinct T7.`character_name`)\nFROM \n  `eveonline_evecharacter` \n  LEFT OUTER JOIN `authentication_characterownership` ON (\n    `eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`\n  ) \n  LEFT OUTER JOIN `auth_user` ON (\n    `authentication_characterownership`.`user_id` = `auth_user`.`id`\n  ) \n  LEFT OUTER JOIN `authentication_userprofile` ON (\n    `auth_user`.`id` = `authentication_userprofile`.`user_id`\n  ) \n  LEFT OUTER JOIN `eveonline_evecharacter` T7 ON (\n    `authentication_userprofile`.`main_character_id` = T7.`id`\n  ) \nWhere \n  T7.`corporation_id` in ($corp) ",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Mains",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 15000000
+                },
+                {
+                  "color": "green",
+                  "value": 25000000
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 5,
+          "x": 8,
+          "y": 6
+        },
+        "id": 7,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT \nsum(`invoices_invoice`.`amount`)/$mains\nFROM `invoices_invoice`\nINNER JOIN `eveonline_evecharacter` ON (`invoices_invoice`.`character_id` = `eveonline_evecharacter`.`id`) \nLEFT OUTER JOIN `authentication_characterownership` ON (`eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`) \nLEFT OUTER JOIN `auth_user` ON (`authentication_characterownership`.`user_id` = `auth_user`.`id`) \nLEFT OUTER JOIN `authentication_userprofile` ON (`auth_user`.`id` = `authentication_userprofile`.`user_id`) \nLEFT OUTER JOIN `eveonline_evecharacter` T7 ON (`authentication_userprofile`.`main_character_id` = T7.`id`) \nWHERE $__timeFilter(`invoices_invoice`.`due_date`) and T7.`corporation_id` in ($corp)\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Total Contributions Per Main",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 20
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 5,
+          "x": 13,
+          "y": 8
+        },
+        "id": 12,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": false,
+              "displayName": "name"
+            }
+          ]
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \n  name\nFrom\n(SELECT \n  T7.character_name as name,\n  Sum(`corptools_characteraudit`.`balance`) as isk\nFROM \n  `eveonline_evecharacter` \n  LEFT OUTER JOIN `authentication_characterownership` ON (\n    `eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`\n  ) \n  LEFT OUTER JOIN `corptools_characteraudit` ON (\n    `eveonline_evecharacter`.`id` = `corptools_characteraudit`.`character_id`\n  ) \n  LEFT OUTER JOIN `auth_user` ON (\n    `authentication_characterownership`.`user_id` = `auth_user`.`id`\n  ) \n  LEFT OUTER JOIN `authentication_userprofile` ON (\n    `auth_user`.`id` = `authentication_userprofile`.`user_id`\n  ) \n  LEFT OUTER JOIN `eveonline_evecharacter` T7 ON (\n    `authentication_userprofile`.`main_character_id` = T7.`id`\n  ) \nWhere \n  T7.`corporation_id` in ($corp)\nGroup By \n  T7.`character_id`\n) as i\nwhere isnull(i.isk)",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Mains with no Isk/Audit",
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 2,
+          "x": 5,
+          "y": 10
+        },
+        "id": 16,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "allValues"
+            ],
+            "fields": "/.*/",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \r\n  concat(count(distinct mc.character_id),\" / \",$mains)\r\nfrom \r\n  (select location_id,character_id,type_name_id,location_name_id \r\n  \tfrom corptools_characterasset \r\n\t  \twhere type_name_id in (\r\n\t          '45647','42243','19724','19722','19726','19720','42124','52907'\r\n\t  \t  ) \r\n\t  \tand location_name_id in (\r\n\t\t    select \r\n\t\t      distinct(loc.location_id) \r\n\t\t    from \r\n\t\t      corptools_evelocation loc \r\n\t\t      left outer join corptools_mapsystem sys on loc.system_id = sys.system_id \r\n\t\t    where \r\n\t\t      sys.system_id in ($StagingSystem)\r\n\t\t  ) \r\n  ) assets \r\n  join corptools_characteraudit ac on assets.character_id = ac.id \r\n  join eveonline_evecharacter ec on ac.character_id = ec.id \r\n  join corptools_eveitemtype it on assets.type_name_id = it.type_id \r\n  left outer join corptools_evelocation el on assets.location_name_id = el.location_id \r\n  join authentication_characterownership co on ec.id = co.character_id\r\n  join authentication_userprofile up ON up.user_id = co.user_id \r\n  join eveonline_evecharacter mc ON up.main_character_id = mc.id \r\nwhere \r\n mc.`corporation_id` in ($corp)\r\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Dreads",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 2,
+          "x": 7,
+          "y": 10
+        },
+        "id": 19,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "allValues"
+            ],
+            "fields": "/.*/",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \r\n  concat(count(distinct mc.character_id),\" / \",$mains)\r\nfrom \r\n  (select location_id,character_id,type_name_id,location_name_id \r\n  \tfrom corptools_characterasset \r\n\t  \twhere type_name_id in (\r\n          '11567','671','45649','3764','42241','23773','42126'\r\n\t  \t  ) \r\n\t  \tand location_name_id in (\r\n\t\t    select \r\n\t\t      distinct(loc.location_id) \r\n\t\t    from \r\n\t\t      corptools_evelocation loc \r\n\t\t      left outer join corptools_mapsystem sys on loc.system_id = sys.system_id \r\n\t\t    where \r\n\t\t      sys.system_id in ($StagingSystem)\r\n\t\t  ) \r\n  ) assets \r\n  join corptools_characteraudit ac on assets.character_id = ac.id \r\n  join eveonline_evecharacter ec on ac.character_id = ec.id \r\n  join corptools_eveitemtype it on assets.type_name_id = it.type_id \r\n  left outer join corptools_evelocation el on assets.location_name_id = el.location_id \r\n  join authentication_characterownership co on ec.id = co.character_id\r\n  join authentication_userprofile up ON up.user_id = co.user_id \r\n  join eveonline_evecharacter mc ON up.main_character_id = mc.id \r\nwhere \r\n mc.`corporation_id` in ($corp) ",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Titans",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 9,
+          "y": 10
+        },
+        "id": 21,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "<div style=\"display: flex;justify-content: center;\">\r\n  <img\r\n    data-src=\"https://images.evetech.net/corporations/$corp/logo\"\r\n    width=\"256\"\r\n    height=\"256\"\r\n    src=\"https://images.evetech.net/corporations/$corp/logo\"\r\n  />\r\n</div>\r\n",
+          "mode": "html"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "time_series",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": false,
+            "rawSql": "SELECT\n  last_kill AS \"time\",\n  id\nFROM aastatistics_statscharacter\nWHERE\n  $__timeFilter(last_kill)\nORDER BY last_kill",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "transparent": true,
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 2,
+          "x": 5,
+          "y": 13
+        },
+        "id": 15,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "allValues"
+            ],
+            "fields": "/.*/",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \r\n  concat(count(distinct mc.character_id),\" / \",$mains)\r\nfrom \r\n  (select location_id,character_id,type_name_id,location_name_id \r\n  \tfrom corptools_characterasset \r\n\t  \twhere type_name_id in (\r\n    '23757','23915','24483','23911'\r\n\t  \t  ) \r\n\t  \tand location_name_id in (\r\n\t\t    select \r\n\t\t      distinct(loc.location_id) \r\n\t\t    from \r\n\t\t      corptools_evelocation loc \r\n\t\t      left outer join corptools_mapsystem sys on loc.system_id = sys.system_id \r\n\t\t    where \r\n\t\t      sys.system_id in ($StagingSystem)\r\n\t\t  ) \r\n  ) assets \r\n  join corptools_characteraudit ac on assets.character_id = ac.id \r\n  join eveonline_evecharacter ec on ac.character_id = ec.id \r\n  join corptools_eveitemtype it on assets.type_name_id = it.type_id \r\n  left outer join corptools_evelocation el on assets.location_name_id = el.location_id \r\n  join authentication_characterownership co on ec.id = co.character_id\r\n  join authentication_userprofile up ON up.user_id = co.user_id \r\n  join eveonline_evecharacter mc ON up.main_character_id = mc.id \r\nwhere \r\n mc.`corporation_id` in ($corp) ",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Cariers",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 2,
+          "x": 7,
+          "y": 13
+        },
+        "id": 18,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "allValues"
+            ],
+            "fields": "/.*/",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \r\n  concat(count(distinct mc.character_id),\" / \",$mains)\r\nfrom \r\n  (select location_id,character_id,type_name_id,location_name_id \r\n  \tfrom corptools_characterasset \r\n\t  \twhere type_name_id in (\r\n          '23919','22852','23913','3514','42125','23917'\r\n\t  \t  ) \r\n\t  \tand location_name_id in (\r\n\t\t    select \r\n\t\t      distinct(loc.location_id) \r\n\t\t    from \r\n\t\t      corptools_evelocation loc \r\n\t\t      left outer join corptools_mapsystem sys on loc.system_id = sys.system_id \r\n\t\t    where \r\n\t\t      sys.system_id in ($StagingSystem)\r\n\t\t  ) \r\n  ) assets \r\n  join corptools_characteraudit ac on assets.character_id = ac.id \r\n  join eveonline_evecharacter ec on ac.character_id = ec.id \r\n  join corptools_eveitemtype it on assets.type_name_id = it.type_id \r\n  left outer join corptools_evelocation el on assets.location_name_id = el.location_id \r\n  join authentication_characterownership co on ec.id = co.character_id\r\n  join authentication_userprofile up ON up.user_id = co.user_id \r\n  join eveonline_evecharacter mc ON up.main_character_id = mc.id \r\nwhere \r\n mc.`corporation_id` in ($corp) \r\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Supers",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 2,
+          "x": 5,
+          "y": 16
+        },
+        "id": 17,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "allValues"
+            ],
+            "fields": "/.*/",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \r\n  concat(count(distinct mc.character_id),\" / \",$mains)\r\nfrom \r\n  (select location_id,character_id,type_name_id,location_name_id \r\n  \tfrom corptools_characterasset \r\n\t  \twhere type_name_id in (\r\n          '37604','42242','37606','45645','37605','37607'\r\n\t  \t  ) \r\n\t  \tand location_name_id in (\r\n\t\t    select \r\n\t\t      distinct(loc.location_id) \r\n\t\t    from \r\n\t\t      corptools_evelocation loc \r\n\t\t      left outer join corptools_mapsystem sys on loc.system_id = sys.system_id \r\n\t\t    where \r\n\t\t      sys.system_id in ($StagingSystem)\r\n\t\t  ) \r\n  ) assets \r\n  join corptools_characteraudit ac on assets.character_id = ac.id \r\n  join eveonline_evecharacter ec on ac.character_id = ec.id \r\n  join corptools_eveitemtype it on assets.type_name_id = it.type_id \r\n  left outer join corptools_evelocation el on assets.location_name_id = el.location_id \r\n  join authentication_characterownership co on ec.id = co.character_id\r\n  join authentication_userprofile up ON up.user_id = co.user_id \r\n  join eveonline_evecharacter mc ON up.main_character_id = mc.id \r\nwhere \r\n mc.`corporation_id` in ($corp) ",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "FAXs",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 20
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 2,
+          "x": 7,
+          "y": 16
+        },
+        "id": 10,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "allValues"
+            ],
+            "fields": "/.*/",
+            "values": false
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \n  concat(count(i.isk), \" / \", $mains)\nFrom\n(SELECT \n  Sum(`corptools_characteraudit`.`balance`) as isk\nFROM \n  `eveonline_evecharacter` \n  LEFT OUTER JOIN `authentication_characterownership` ON (\n    `eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`\n  ) \n  LEFT OUTER JOIN `corptools_characteraudit` ON (\n    `eveonline_evecharacter`.`id` = `corptools_characteraudit`.`character_id`\n  ) \n  LEFT OUTER JOIN `auth_user` ON (\n    `authentication_characterownership`.`user_id` = `auth_user`.`id`\n  ) \n  LEFT OUTER JOIN `authentication_userprofile` ON (\n    `auth_user`.`id` = `authentication_userprofile`.`user_id`\n  ) \n  LEFT OUTER JOIN `eveonline_evecharacter` T7 ON (\n    `authentication_userprofile`.`main_character_id` = T7.`id`\n  ) \nWhere \n  T7.`corporation_id` in ($corp)\nGroup By \n  T7.`character_id`) i\n  \nwhere i.isk < $isk_min",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Low Isk",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "F2xOhoeGk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 20
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 13,
+          "w": 18,
+          "x": 0,
+          "y": 19
+        },
+        "id": 13,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": false,
+              "displayName": "Main"
+            }
+          ]
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "F2xOhoeGk"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \r\n  mc.character_name as \"Main\", \r\n  GROUP_CONCAT(it.name SEPARATOR \", \") as \"Item\"\r\nfrom \r\n  (select location_id,character_id,type_name_id,location_name_id \r\n  \tfrom corptools_characterasset \r\n\t  \twhere type_name_id in (\r\n    '23919', '37604', '23757', '11567', \r\n    '45647', '42243', '23915', '42242', \r\n    '671', '22852', '45649', '3764', '37606', \r\n    '45645', '37605', '42241', '19724', \r\n    '19722', '24483', '37607', '23913', \r\n    '19726', '23773', '19720', '3514', \r\n    '28352', '33687', '23911', '42126', \r\n    '42124', '42125', '23917', '52907'\r\n\t  \t  ) \r\n\t  \tand location_name_id in (\r\n\t\t    select \r\n\t\t      distinct(loc.location_id) \r\n\t\t    from \r\n\t\t      corptools_evelocation loc \r\n\t\t      left outer join corptools_mapsystem sys on loc.system_id = sys.system_id \r\n\t\t    where \r\n\t\t      sys.system_id in ($StagingSystem)\r\n\t\t  ) \r\n  ) assets \r\n  join corptools_characteraudit ac on assets.character_id = ac.id \r\n  join eveonline_evecharacter ec on ac.character_id = ec.id \r\n  join corptools_eveitemtype it on assets.type_name_id = it.type_id \r\n  join corptools_eveitemgroup ig on it.group_id = ig.group_id \r\n  left outer join corptools_evelocation el on assets.location_name_id = el.location_id \r\n  join authentication_characterownership co on ec.id = co.character_id\r\n  join authentication_userprofile up ON up.user_id = co.user_id \r\n  join eveonline_evecharacter mc ON up.main_character_id = mc.id \r\nwhere \r\n mc.`corporation_id` in ($corp) \r\ngroup by \r\n  1\r\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "aastatistics_statscharacter",
+            "timeColumn": "last_kill",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Mains with Capitals and less than Cutoff Isk",
+        "type": "table"
+      }
+    ],
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "V0LTA",
+            "value": "1831131676"
+          },
+          "datasource": {
+            "type": "mysql",
+            "uid": "F2xOhoeGk"
+          },
+          "definition": "SELECT\n  corporation_id as __value, corporation_name as __text\nFROM eveonline_evecorporationinfo\nWHERE alliance_id = 1\norder by corporation_name",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Corporation",
+          "multi": false,
+          "name": "corp",
+          "options": [],
+          "query": "SELECT\n  corporation_id as __value, corporation_name as __text\nFROM eveonline_evecorporationinfo\nWHERE alliance_id = 1\norder by corporation_name",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": true,
+            "text": "5000000000",
+            "value": "5000000000"
+          },
+          "hide": 0,
+          "label": "Low Isk Cutoff",
+          "name": "isk_min",
+          "options": [
+            {
+              "selected": true,
+              "text": "5000000000",
+              "value": "5000000000"
+            }
+          ],
+          "query": "5000000000",
+          "skipUrlSync": false,
+          "type": "textbox"
+        },
+        {
+          "current": {
+            "selected": true,
+            "text": [
+              "O-CNPR",
+              "X47L-Q"
+            ],
+            "value": [
+              "30003683",
+              "30001967"
+            ]
+          },
+          "datasource": {
+            "type": "mysql",
+            "uid": "F2xOhoeGk"
+          },
+          "definition": "select system_id as __value, name as __text from corptools_mapsystem",
+          "hide": 0,
+          "includeAll": false,
+          "multi": true,
+          "name": "StagingSystem",
+          "options": [],
+          "query": "select system_id as __value, name as __text from corptools_mapsystem",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "393",
+            "value": "393"
+          },
+          "datasource": {
+            "type": "mysql",
+            "uid": "F2xOhoeGk"
+          },
+          "definition": "SELECT\n   member_count\nFROM eveonline_evecorporationinfo\nWHERE corporation_id = $corp",
+          "hide": 2,
+          "includeAll": false,
+          "multi": false,
+          "name": "members",
+          "options": [],
+          "query": "SELECT\n   member_count\nFROM eveonline_evecorporationinfo\nWHERE corporation_id = $corp",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "120",
+            "value": "120"
+          },
+          "datasource": {
+            "type": "mysql",
+            "uid": "F2xOhoeGk"
+          },
+          "definition": "SELECT \n  count(distinct T7.`character_name`)\nFROM \n  `eveonline_evecharacter` \n  LEFT OUTER JOIN `authentication_characterownership` ON (\n    `eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`\n  ) \n  LEFT OUTER JOIN `auth_user` ON (\n    `authentication_characterownership`.`user_id` = `auth_user`.`id`\n  ) \n  LEFT OUTER JOIN `authentication_userprofile` ON (\n    `auth_user`.`id` = `authentication_userprofile`.`user_id`\n  ) \n  LEFT OUTER JOIN `eveonline_evecharacter` T7 ON (\n    `authentication_userprofile`.`main_character_id` = T7.`id`\n  ) \nWhere \n  T7.`corporation_id` in ($corp) ",
+          "hide": 2,
+          "includeAll": false,
+          "multi": false,
+          "name": "mains",
+          "options": [],
+          "query": "SELECT \n  count(distinct T7.`character_name`)\nFROM \n  `eveonline_evecharacter` \n  LEFT OUTER JOIN `authentication_characterownership` ON (\n    `eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`\n  ) \n  LEFT OUTER JOIN `auth_user` ON (\n    `authentication_characterownership`.`user_id` = `auth_user`.`id`\n  ) \n  LEFT OUTER JOIN `authentication_userprofile` ON (\n    `auth_user`.`id` = `authentication_userprofile`.`user_id`\n  ) \n  LEFT OUTER JOIN `eveonline_evecharacter` T7 ON (\n    `authentication_userprofile`.`main_character_id` = T7.`id`\n  ) \nWhere \n  T7.`corporation_id` in ($corp) ",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-30d",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "utc",
+    "title": "Corporation Finances Dashboard",
+    "uid": "TK6JJNMVk",
+    "version": 4,
+    "weekStart": ""
+  }
