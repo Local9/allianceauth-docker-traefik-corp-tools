@@ -150,8 +150,6 @@ _NOTE: If you specify a version of allianceauth in your `requirements.txt` in a 
 1. Run `docker-compose --env-file=.env up -d`
 
 ```
-# allianceauth-docker-traefik
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
