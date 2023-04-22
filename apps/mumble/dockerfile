@@ -39,9 +39,9 @@ RUN echo "Ice install will take quite some time (5+ Min) please be patient..."
 RUN pip install -r requirements.txt
 
 # Initialize authenticator
-ADD ./docker-entrypoint.sh /home/allianceauth/docker-entrypoint.sh
-ADD ./authenticator.ini /home/allianceauth/mumble-authenticator/authenticator.ini
-ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD ./apps/mumble/docker-entrypoint.sh /home/allianceauth/docker-entrypoint.sh
+ADD ./apps/mumble/authenticator.ini /home/allianceauth/mumble-authenticator/authenticator.ini
+ADD ./apps/mumble/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 USER root
 
