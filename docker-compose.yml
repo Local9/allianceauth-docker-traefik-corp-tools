@@ -267,6 +267,8 @@ services:
       - auth_mysql
     volumes:
       - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - ./grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/datasource.yaml
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
     environment:
       GF_INSTALL_PLUGINS: grafana-piechart-panel,grafana-clock-panel,grafana-simple-json-datasource
