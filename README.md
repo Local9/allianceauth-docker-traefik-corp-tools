@@ -1,4 +1,29 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
 # Alliance Auth Docker Stack: Docker Pre-Loaded with Corp Tools and other modules
+
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+
+  <h3 align="center">Alliance Auth Docker Stack!</h3>
+
+  <p align="center">
+    Light Alliance Auth Docker Stack (LADDS!)
+    <br />
+    <a href="https://github.com/voltatek/allianceauth-docker-traefik-corp-tools/#system-requirments"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/voltatek/allianceauth-docker-traefik-corp-tools">View Demo</a>
+    ·
+    <a href="https://github.com/voltatek/allianceauth-docker-traefik-corp-tools/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/voltatek/allianceauth-docker-traefik-corp-tools/issues">Request Feature</a>
+  </p>
+</p>
 
 ## System Requirments
 
@@ -126,3 +151,15 @@ _NOTE: If you specify a version of allianceauth in your `requirements.txt` in a 
 
 ```
 # allianceauth-docker-traefik
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/voltatek/allianceauth-docker-traefik-corp-tools.svg?style=for-the-badge
+[contributors-url]: https://github.com/voltatek/allianceauth-docker-traefik-corp-tools/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/voltatek/allianceauth-docker-traefik-corp-tools.svg?style=for-the-badge
+[forks-url]: https://github.com/voltatek/allianceauth-docker-traefik-corp-tools/network/members
+[stars-shield]: https://img.shields.io/github/stars/voltatek/allianceauth-docker-traefik-corp-tools.svg?style=for-the-badge
+[stars-url]: https://github.com/voltatek/allianceauth-docker-traefik-corp-toolsstargazers
+[issues-shield]: https://img.shields.io/github/issues/voltatek/allianceauth-docker-traefik-corp-tools.svg?style=for-the-badge
+[issues-url]: https://github.com/voltatek/allianceauth-docker-traefik-corp-tools/issues
