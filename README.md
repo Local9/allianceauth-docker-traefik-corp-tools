@@ -1,4 +1,4 @@
-# Alliance Auth Docker STtck: Docker Pre-Loaded with Corp Tools and other modules
+# Alliance Auth Docker Stack: Docker Pre-Loaded with Corp Tools and other modules
 
 ## System Requirments
 
