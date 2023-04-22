@@ -299,6 +299,16 @@ services:
         - 64738:64738/udp
     volumes:
       - mumble-data:/data
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.mumble-rtr.entrypoints=https"
+      - "traefik.http.routers.mumble-rtr.rule=Host(`mumble.$DOMAIN`)"
+      ## Middlewares
+      #- "traefik.http.routers.mumble-rtr.middlewares=chain-noauth@file"
+      ## HTTP Services
+      - "traefik.http.routers.mumble-rtr.service=mumble-svc"
+      - "traefik.http.services.mumble-svc.loadbalancer.server.port=64738"
 
   # WhoAmI - For Testing and Troubleshooting
   whoami:

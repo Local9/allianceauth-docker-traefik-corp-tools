@@ -1,10 +1,3 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-
-# Alliance Auth Docker Stack: Docker Pre-Loaded with Corp Tools and other modules
-
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
