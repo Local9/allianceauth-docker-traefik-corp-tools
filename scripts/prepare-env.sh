@@ -17,6 +17,8 @@ sed -i.bak 's/%GRAFANA_DB_PASSWORD%/'"$(openssl rand -hex 24)"'/g' .env
 sed -i.bak 's/%AA_SECRET_KEY%/'"$(openssl rand -hex 24)"'/g' .env
 sed -i.bak 's/%AA_DB_PASSWORD%/'"$(openssl rand -hex 24)"'/g' .env
 sed -i.bak 's/%AA_DB_ROOT_PASSWORD%/'"$(openssl rand -hex 24)"'/g' .env
+sed -i.bak 's/%MUMBLE_ICE_SECRET%/'"$(openssl rand -hex 24)"'/g' .env
+sed -i.bak 's/%MUMBLE_SERVER_PASSWORD%/'"$(openssl rand -hex 24)"'/g' .env
 
 #Prompts to collect user information
 IFS= read -p "Enter the display name for your auth instance: " sitename
