@@ -22,3 +22,4 @@ providers:
   options:
     # <string, required> path to dashboard files on disk. Required
     path: /var/lib/grafana/dashboards
+    foldersFromFilesStructure: true

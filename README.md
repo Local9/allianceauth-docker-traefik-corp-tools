@@ -77,6 +77,15 @@ To manage roles, this bot role must be at the top of the hierarchy. Edit your Di
 
 Note that the bot will never appear online as it does not participate in chat channels.
 
+## Configure Mumle for SuperUser Access
+
+1. Your Mumble SU password will be generated on first boot and printed to the logs. if you wish to change it or forget it.
+   1. open mumble_auth docker shell `docker-compose exec mumble_auth bash`
+   2. run command `/usr/bin/mumble-server -fg -ini /data/mumble_server_config.ini -supw YouPassHere`
+   3. run command `supervisorctl restart mumbleserver:mumble`
+   4. run command `supervisorctl restart mumbleserver:authenticator`  - Important you restart Mumble first then the authenticator
+   5. exit the terminal with `exit`
+
 ## Adding extra packages
 There are a handful of ways to add packages:
 * Running `pip install` in the container

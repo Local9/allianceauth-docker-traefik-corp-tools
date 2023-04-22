@@ -31,7 +31,7 @@
     "panels": [
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "description": "",
@@ -83,7 +83,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -112,7 +112,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -164,7 +164,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -200,7 +200,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -248,7 +248,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -284,7 +284,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -332,7 +332,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -368,7 +368,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -431,7 +431,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -467,7 +467,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -524,7 +524,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -560,7 +560,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -623,7 +623,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -659,7 +659,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -708,7 +708,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -744,7 +744,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -801,7 +801,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -837,7 +837,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -900,7 +900,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -936,7 +936,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -985,7 +985,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -1021,7 +1021,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -1070,7 +1070,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -1106,7 +1106,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "gridPos": {
@@ -1129,7 +1129,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "time_series",
@@ -1165,7 +1165,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -1214,7 +1214,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -1250,7 +1250,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -1299,7 +1299,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -1335,7 +1335,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -1384,7 +1384,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -1420,7 +1420,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -1477,7 +1477,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -1513,7 +1513,7 @@
       },
       {
         "datasource": {
-          "type": "mysql",
+          "type": "MySQL",
           "uid": "F2xOhoeGk"
         },
         "fieldConfig": {
@@ -1576,7 +1576,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "mysql",
+              "type": "MySQL",
               "uid": "F2xOhoeGk"
             },
             "format": "table",
@@ -1623,7 +1623,7 @@
             "value": "1831131676"
           },
           "datasource": {
-            "type": "mysql",
+            "type": "MySQL",
             "uid": "F2xOhoeGk"
           },
           "definition": "SELECT\n  corporation_id as __value, corporation_name as __text\nFROM eveonline_evecorporationinfo\nWHERE alliance_id = 1\norder by corporation_name",
@@ -1673,7 +1673,7 @@
             ]
           },
           "datasource": {
-            "type": "mysql",
+            "type": "MySQL",
             "uid": "F2xOhoeGk"
           },
           "definition": "select system_id as __value, name as __text from corptools_mapsystem",
@@ -1696,7 +1696,7 @@
             "value": "393"
           },
           "datasource": {
-            "type": "mysql",
+            "type": "MySQL",
             "uid": "F2xOhoeGk"
           },
           "definition": "SELECT\n   member_count\nFROM eveonline_evecorporationinfo\nWHERE corporation_id = $corp",
@@ -1719,7 +1719,7 @@
             "value": "120"
           },
           "datasource": {
-            "type": "mysql",
+            "type": "MySQL",
             "uid": "F2xOhoeGk"
           },
           "definition": "SELECT \n  count(distinct T7.`character_name`)\nFROM \n  `eveonline_evecharacter` \n  LEFT OUTER JOIN `authentication_characterownership` ON (\n    `eveonline_evecharacter`.`id` = `authentication_characterownership`.`character_id`\n  ) \n  LEFT OUTER JOIN `auth_user` ON (\n    `authentication_characterownership`.`user_id` = `auth_user`.`id`\n  ) \n  LEFT OUTER JOIN `authentication_userprofile` ON (\n    `auth_user`.`id` = `authentication_userprofile`.`user_id`\n  ) \n  LEFT OUTER JOIN `eveonline_evecharacter` T7 ON (\n    `authentication_userprofile`.`main_character_id` = T7.`id`\n  ) \nWhere \n  T7.`corporation_id` in ($corp) ",
