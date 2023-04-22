@@ -1,0 +1,354 @@
+version: '3.8'
+networks:
+  t2_proxy:
+    name: t2_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.90.0/24
+  default:
+    driver: bridge
+  socket_proxy:
+    name: socket_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.91.0/24
+
+########################### EXTENSION FIELDS
+# Helps eliminate repetition of sections
+# Keys common to some of the services
+x-common-keys-external: &common-keys-external
+  networks:
+    - t2_proxy
+  security_opt:
+    - no-new-privileges:true
+  restart: always
+
+x-common-keys-internal: &common-keys-internal
+  networks:
+    - t2_proxy
+  security_opt:
+    - no-new-privileges:true
+  restart: always
+
+services:
+  traefik:
+    <<: *common-keys-external # See EXTENSION FIELDS at the top
+    container_name: traefik
+    image: traefik:2.9
+    command: # CLI arguments
+      - --global.checkNewVersion=true
+      - --global.sendAnonymousUsage=true
+      - --entryPoints.http.address=:80
+      - --entryPoints.https.address=:443
+      # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
+      - --entrypoints.https.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS
+      - --entryPoints.traefik.address=:8080
+      # - --entryPoints.ping.address=:8081
+      - --api=true
+      #- --api.insecure=true
+      - --api.dashboard=true
+      #- --ping=true
+      # - --serversTransport.insecureSkipVerify=true
+      - --log=true
+      - --log.filePath=/logs/traefik.log
+      - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+      - --accessLog=true
+      - --accessLog.filePath=/logs/access.log
+      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
+      - --accessLog.filters.statusCodes=204-299,400-499,500-599
+      - --providers.docker=true
+      # - --providers.docker.endpoint=unix:///var/run/docker.sock # Use Docker Socket Proxy instead for improved security
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
+      # Automatically set Host rule for services
+      # - --providers.docker.defaultrule=Host(`{{ index .Labels "com.docker.compose.service" }}.$DOMAIN`)
+      - --providers.docker.exposedByDefault=false
+      # - --entrypoints.https.http.middlewares=chain-oauth@file
+      - --entrypoints.https.http.tls.options=tls-opts@file
+      # Add dns-cloudflare as default certresolver for all services. Also enables TLS and no need to specify on individual services
+      - --entrypoints.https.http.tls.certresolver=dns-cloudflare
+      - --entrypoints.https.http.tls.domains[0].main=$DOMAIN
+      - --entrypoints.https.http.tls.domains[0].sans=*.$DOMAIN
+      - --providers.docker.network=t2_proxy
+      - --providers.docker.swarmMode=false
+      - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
+      # - --providers.file.filename=/path/to/file # Load dynamic configuration from a file
+      - --providers.file.watch=true # Only works on top level files in the rules folder
+      #- --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
+      - --certificatesResolvers.dns-cloudflare.acme.email=$CLOUDFLARE_EMAIL
+      - --certificatesResolvers.dns-cloudflare.acme.storage=/acme.json
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
+      # - --metrics.prometheus=true
+      # - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+    networks:
+      t2_proxy:
+        ipv4_address: 192.168.90.254 
+      socket_proxy:
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+      # - target: 8080 # insecure api wont work
+      #   published: 8080
+      #   protocol: tcp
+      #   mode: host
+    volumes:
+      - ${PWD}/conf/traefik2/rules/:/rules # file provider directory
+      # - /var/run/docker.sock:/var/run/docker.sock:ro # Use Docker Socket Proxy instead for improved security
+      - ${PWD}/conf/traefik2/acme/acme.json:/acme.json # cert location - you must touch this file and change permissions to 600
+      - ${PWD}/conf/traefik2/logs/:/logs # for fail2ban or crowdsec
+      - ${PWD}/conf/.htpasswd:/conf/.htpasswd:ro
+    environment:
+      - TZ=Europe/London
+      - CF_API_EMAIL=$CLOUDFLARE_EMAIL
+      - CF_API_KEY=$CLOUDFLARE_API_KEY
+      - DOMAIN # Passing the domain name to traefik container to be able to use the variable in rules. 
+    labels:
+      #- "autoheal=true"
+      - "traefik.enable=true"
+      # HTTP-to-HTTPS Redirect
+      - "traefik.http.routers.http-catchall.entrypoints=http"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # HTTP Routers
+      - "traefik.http.routers.traefik-rtr.entrypoints=https"
+      ## This install comes with a basic auth - comment out below if you wish to hide the Trafik dashboard 
+      - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN`)"
+      ## Services - API
+      - "traefik.http.routers.traefik-rtr.service=api@internal"
+      ## Healthcheck/ping
+      #- "traefik.http.routers.ping.rule=Host(`traefik.$DOMAIN`) && Path(`/ping`)"
+      #- "traefik.http.routers.ping.tls=true"
+      #- "traefik.http.routers.ping.service=ping@internal"
+      ## Middlewares
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-auth@file"
+
+
+  # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
+  socket-proxy:
+    <<: *common-keys-internal # See EXTENSION FIELDS at the top
+    container_name: socket-proxy
+    image: tecnativa/docker-socket-proxy
+    networks:
+      socket_proxy:
+        ipv4_address: 192.168.91.254 # You can specify a static IP
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      - LOG_LEVEL=debug # debug,info,notice,warning,err,crit,alert,emerg
+      ## Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc.).
+      # 0 to revoke access.
+      # 1 to grant access.
+      ## Granted by Default
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      ## Revoked by Default
+      # Security critical
+      - AUTH=0
+      - SECRETS=0
+      - POST=1
+      - BUILD=0
+      - COMMIT=0
+      - CONFIGS=0
+      - CONTAINERS=1 # Traefik
+      - DISTRIBUTION=0
+      - EXEC=0
+      - IMAGES=1
+      - INFO=1
+      - NETWORKS=1 
+      - NODES=0
+      - PLUGINS=0
+      - SERVICES=1
+      - SESSION=0
+      - SWARM=0
+      - SYSTEM=0
+      - TASKS=1 
+      - VOLUMES=1
+
+  auth_mysql:
+    <<: *common-keys-internal # See EXTENSION FIELDS at the top
+    container_name: auth_mysql
+    image: mysql:8.0
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --default-authentication-plugin=mysql_native_password]
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      #- ./import.sql:/docker-entrypoint-initdb.d/import.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${AA_DB_ROOT_PASSWORD?err}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-uroot", "-proot", "-h", "localhost", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  nginx:
+    <<: *common-keys-external # See EXTENSION FIELDS at the top
+    container_name: nginx
+    image: nginx:1.21
+    volumes:
+      - /etc/localtime:/etc/localtime:ro  
+      - /etc/timezone:/etc/timezone:ro
+      - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
+      - static-volume:/var/www/myauth/static
+    depends_on:
+      - allianceauth
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.auth-rtr.entrypoints=https"
+      - "traefik.http.routers.auth-rtr.rule=Host(`$AUTH_SUBDOMAIN.$DOMAIN`)"
+      ## Middlewares
+      - "traefik.http.routers.auth-rtr.middlewares=chain-no-auth@file"
+      ## HTTP Services
+      - "traefik.http.routers.auth-rtr.service=auth-svc"
+      - "traefik.http.services.auth-svc.loadbalancer.server.port=80"
+
+  redis:
+    <<: *common-keys-internal # See EXTENSION FIELDS at the top
+    container_name: redis
+    image: redis:6.2
+    command: redis-server
+    volumes:
+      - "redis-data:/data"
+
+  allianceauth:
+    <<: *common-keys-internal # See EXTENSION FIELDS at the top
+    container_name: allianceauth
+    networks:
+      - t2_proxy
+      - socket_proxy
+    #image: ${AA_DOCKER_TAG?err}
+    build:
+      context: .
+      dockerfile: custom.dockerfile
+      args:
+        AA_DOCKER_TAG: ${AA_DOCKER_TAG?err}
+    env_file:
+      - ./.env
+    volumes:
+      - ./conf/local.py:/home/allianceauth/myauth/myauth/settings/local.py
+      - ./conf/celery.py:/home/allianceauth/myauth/myauth/celery.py
+      - ./conf/prom_exporter.py:/home/allianceauth/myauth/prom_exporter.py
+      - ./templates:/home/allianceauth/myauth/myauth/templates/
+      - ./conf/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+      - static-volume:/var/www/myauth/static
+    depends_on:
+      - redis
+      - auth_mysql
+
+  prometheus:
+    <<: *common-keys-internal # See EXTENSION FIELDS at the top
+    container_name: prometheus
+    image: prom/prometheus:v2.21.0
+    ports:
+      - '${PROM_PORT:-9000}:9090'
+    volumes:
+      - ./conf/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+
+  grafana:
+    <<: *common-keys-external # See EXTENSION FIELDS at the top
+    container_name: grafana
+    image: grafana/grafana-oss:latest
+    depends_on:
+      - auth_mysql
+    volumes:
+      - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - grafana-data:/var/lib/grafana
+    environment:
+      GF_INSTALL_PLUGINS: grafana-piechart-panel,grafana-clock-panel,grafana-simple-json-datasource
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.grafana-rtr.entrypoints=https"
+      - "traefik.http.routers.grafana-rtr.rule=Host(`grafana.$DOMAIN`)"
+      ## Middlewares
+      - "traefik.http.routers.grafana-rtr.middlewares=chain-no-auth@file"
+      ## HTTP Services
+      - "traefik.http.routers.grafana-rtr.service=grafana-svc"
+      - "traefik.http.services.grafana-svc.loadbalancer.server.port=3000"
+
+
+  # WhoAmI - For Testing and Troubleshooting
+  whoami:
+    <<: *common-keys-external # See EXTENSION FIELDS at the top
+    image: traefik/whoami
+    container_name: whoami
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.whoami-rtr.entrypoints=https"
+      - "traefik.http.routers.whoami-rtr.rule=Host(`whoami.$DOMAIN`)"
+      ## Middlewares
+      - "traefik.http.routers.whoami-rtr.middlewares=chain-no-auth@file"
+      ## HTTP Services
+      - "traefik.http.routers.whoami-rtr.service=whoami-svc"
+      - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"
+
+
+  loki:
+    <<: *common-keys-external # See EXTENSION FIELDS at the top
+    container_name: loki
+    image: grafana/loki:latest
+    networks:
+      - t2_proxy
+      - socket_proxy
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./conf/loki/local-config.yaml:/etc/loki/local-config.yaml:rw
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    <<: *common-keys-external # See EXTENSION FIELDS at the top
+    image: grafana/promtail:latest
+    volumes:
+      - /var/log:/var/log
+      - ./conf/loki/promtail.yaml:/etc/promtail/config.yaml:rw
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - t2_proxy
+      - socket_proxy
+
+
+  dozzle:
+    <<: *common-keys-external # See EXTENSION FIELDS at the top
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    networks:
+      - t2_proxy
+      - socket_proxy
+    environment:
+      DOZZLE_LEVEL: info
+      DOZZLE_TAILSIZE: 300
+      DOZZLE_FILTER: "status=running"
+      DOCKER_HOST: tcp://socket-proxy:2375
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.dozzle-rtr.entrypoints=https"
+      - "traefik.http.routers.dozzle-rtr.rule=Host(`dozzle.$DOMAIN`)"
+      ## Middlewares
+      - "traefik.http.routers.dozzle-rtr.middlewares=chain-auth@file"
+      ## HTTP Services
+      - "traefik.http.routers.dozzle-rtr.service=dozzle-svc"
+      - "traefik.http.services.dozzle-svc.loadbalancer.server.port=8080"
+
+volumes:
+    redis-data:
+    static-volume:
+    prometheus-data:
+    grafana-data:

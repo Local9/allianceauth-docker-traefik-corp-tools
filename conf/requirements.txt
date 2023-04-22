@@ -1,0 +1,9 @@
+git+https://github.com/Solar-Helix-Independent-Transport/allianceauth-corp-tools.git
+allianceauth-securegroups
+allianceauth-invoices
+prometheus-client
+prometheus-redis-client 
+flask
+git+https://gitlab.com/aaronkable/django-esi.git@prom_full
+git+https://github.com/Solar-Helix-Independent-Transport/allianceauth-prom-client.git
+git+https://github.com/Solar-Helix-Independent-Transport/allianceauth-loki-logging.git

@@ -1,0 +1,6 @@
+.env
+setup.sql
+conf/traefik2/acme/**
+conf/traefik2/logs/**
+mysql-data/**
+conf/.htpasswd

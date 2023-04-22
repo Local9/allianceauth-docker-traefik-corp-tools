@@ -1,0 +1,23 @@
+http:
+  middlewares:
+    chain-no-auth:
+      chain:
+        middlewares:
+          - middlewares-rate-limit
+          - middlewares-https-redirectscheme
+          - middlewares-secure-headers
+          - middlewares-compress
+
+    chain-auth:
+      chain:
+        middlewares:
+          - middlewares-basic-auth
+          - middlewares-rate-limit
+          - middlewares-https-redirectscheme
+          - middlewares-secure-headers
+          - middlewares-compress
+
+
+
+
+
