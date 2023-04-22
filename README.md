@@ -57,6 +57,7 @@ Above are snippets from guide on readthedocs [Auth Discord Service Guide](https:
 ## Install Auth Guide
 
 1. run `./scripts/prepare-env.sh` to set up your environment
+1. run `docker-compose build` to build the custom images - note on mumble docker `Building wheel for zeroc-ice (setup.py): still running...` will take a while to load
 1. run `docker-compose --env-file=.env up -d`
 1. run `docker-compose exec allianceauth bash` to open up a terminal inside your auth container
 1. run `auth migrate`

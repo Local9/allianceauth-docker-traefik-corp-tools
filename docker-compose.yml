@@ -281,6 +281,22 @@ services:
       - "traefik.http.routers.grafana-rtr.service=grafana-svc"
       - "traefik.http.services.grafana-svc.loadbalancer.server.port=3000"
 
+  mumble_auth:
+    <<: *common-keys-external # See EXTENSION FIELDS at the top
+    container_name: ${MUMBLE_HOST_NAME}
+    hostname: ${MUMBLE_HOST_NAME}
+    #image: mumble_auth:latest ##TODO fix this to work this is a local built image
+    build:
+      context: .
+      dockerfile: ./apps/mumble/dockerfile
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    ports:
+        - 64738:64738
+        - 64738:64738/udp
+    volumes:
+      - mumble-data:/data
 
   # WhoAmI - For Testing and Troubleshooting
   whoami:
@@ -323,7 +339,6 @@ services:
       - t2_proxy
       - socket_proxy
 
-
   dozzle:
     <<: *common-keys-external # See EXTENSION FIELDS at the top
     image: amir20/dozzle:latest
@@ -352,3 +367,4 @@ volumes:
     static-volume:
     prometheus-data:
     grafana-data:
+    mumble-data:
