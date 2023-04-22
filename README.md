@@ -30,7 +30,9 @@ If you want to use one of the other DNS providers instead of Cloudflare, make su
 * Corp Tools - https://github.com/Solar-Helix-Independent-Transport/allianceauth-corp-tools
 * Secure Groups - https://github.com/Solar-Helix-Independent-Transport/allianceauth-secure-groups
 * AA Prom Client - https://github.com/Solar-Helix-Independent-Transport/allianceauth-prom-client
+![AA Prom Client](https://raw.githubusercontent.com/voltatek/allianceauth-docker-traefik-corp-tools/main/docs/images/esidashboard.png "AA Prom Client")
 * AA Loki Logging - https://github.com/Solar-Helix-Independent-Transport/allianceauth-loki-logging
+![AA Loki Logging](https://raw.githubusercontent.com/voltatek/allianceauth-docker-traefik-corp-tools/main/docs/images/lokilogs.png "AA Loki Logging")
 
 ## Services Preloaded
 
