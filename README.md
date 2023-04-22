@@ -12,7 +12,7 @@
   <h3 align="center">Alliance Auth Docker Stack!</h3>
 
   <p align="center">
-    Light Alliance Auth Docker Stack (LADDS!)
+    Lightweight Alliance Auth Docker Stack (LADDS!)
     <br />
     <a href="https://github.com/voltatek/allianceauth-docker-traefik-corp-tools/#system-requirments"><strong>Explore the docs »</strong></a>
     <br />
