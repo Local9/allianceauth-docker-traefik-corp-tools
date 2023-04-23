@@ -1,0 +1,251 @@
+{
+    "__inputs": [
+      {
+        "name": "DS_MYSQL",
+        "label": "MySQL",
+        "description": "",
+        "type": "datasource",
+        "pluginId": "mysql",
+        "pluginName": "MySQL"
+      }
+    ],
+    "__elements": {},
+    "__requires": [
+      {
+        "type": "grafana",
+        "id": "grafana",
+        "name": "Grafana",
+        "version": "9.3.2"
+      },
+      {
+        "type": "datasource",
+        "id": "mysql",
+        "name": "MySQL",
+        "version": "1.0.0"
+      },
+      {
+        "type": "panel",
+        "id": "table",
+        "name": "Table",
+        "version": ""
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "displayMode": "auto",
+              "filterable": false,
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Item"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 264
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 27,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": false,
+              "displayName": "Main"
+            }
+          ]
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "table",
+            "group": [],
+            "hide": false,
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select\r\n   GROUP_CONCAT(ec.character_name SEPARATOR \", \") as \"Character\",\r\n   (\r\n      SELECT\r\n         mc.character_name \r\n      FROM\r\n         `authentication_characterownership` \r\n         INNER JOIN\r\n            `eveonline_evecharacter` \r\n            ON (`authentication_characterownership`.`character_id` = `eveonline_evecharacter`.`id`) \r\n         INNER JOIN\r\n            authentication_userprofile up \r\n            ON up.user_id = authentication_characterownership.user_id \r\n         INNER JOIN\r\n            eveonline_evecharacter mc \r\n            ON up.main_character_id = mc.id \r\n      WHERE\r\n         `eveonline_evecharacter`.`id` = ec.id LIMIT 1 \r\n   )\r\n   as \"Main\",\r\n   GROUP_CONCAT(it.name SEPARATOR \", \") as \"Item\",\r\n   IFNULL(el.location_name, IFNULL((\r\n   select\r\n      name \r\n   from\r\n      corptools_mapsystem \r\n   where\r\n      system_id = assets.location_id), concat(\"Unknown (\", assets.location_id, \")\"))) as \"Location\" \r\n   from\r\n      corptools_characterasset assets \r\n      join\r\n         corptools_characteraudit ac \r\n         on assets.character_id = ac.id \r\n      join\r\n         eveonline_evecharacter ec \r\n         on ac.character_id = ec.id \r\n      join\r\n         corptools_eveitemtype it \r\n         on assets.type_id = it.type_id \r\n      join\r\n         corptools_eveitemgroup ig \r\n         on it.group_id = ig.group_id \r\n      left outer join\r\n         corptools_evelocation el \r\n         on assets.location_name_id = el.location_id \r\n   where\r\n      it.type_id in \r\n      (\r\n          $Hulls\r\n      )\r\n      and\r\n      assets.location_id in\r\n      (\r\n          $Location\r\n      )\r\n      and ac.last_update_assets >= NOW() - INTERVAL 48 HOUR \r\n   group by\r\n      4,\r\n      2 \r\n   order by\r\n      1\r\n",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "auth_user",
+            "timeColumn": "last_login",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "Assets by Location by Main",
+        "type": "table"
+      }
+    ],
+    "refresh": false,
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {},
+          "datasource": {
+            "type": "mysql",
+            "uid": "${DS_MYSQL}"
+          },
+          "definition": "SELECT\n  name AS __text,\n  group_id AS __value\nFROM corptools_eveitemgroup\nWHERE\n  group_id in (30, 659, 485, 547, 1538)\nORDER BY name",
+          "hide": 0,
+          "includeAll": true,
+          "multi": true,
+          "name": "Groups",
+          "options": [],
+          "query": "SELECT\n  name AS __text,\n  group_id AS __value\nFROM corptools_eveitemgroup\nWHERE\n  group_id in (30, 659, 485, 547, 1538)\nORDER BY name",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {},
+          "datasource": {
+            "type": "mysql",
+            "uid": "${DS_MYSQL}"
+          },
+          "definition": "select\n   distinct(assets.location_id) as __value,\n   IFNULL(el.location_name, IFNULL((\n   select\n      name \n   from\n      corptools_mapsystem \n   where\n      system_id = assets.location_id), concat(\"Unknown (\", assets.location_id, \")\"))) as __text\n   from\n      corptools_characterasset assets \n      join\n         corptools_characteraudit ac \n         on assets.character_id = ac.id \n      join\n         corptools_eveitemtype it \n         on assets.type_id = it.type_id \n      left outer join\n         corptools_evelocation el \n         on assets.location_name_id = el.location_id \n   where\n      it.group_id in \n      (\n          $Groups\n      )\n      and ac.last_update_assets >= NOW() - INTERVAL 48 HOUR \n   order by\n      2\n",
+          "hide": 0,
+          "includeAll": true,
+          "multi": true,
+          "name": "Location",
+          "options": [],
+          "query": "select\n   distinct(assets.location_id) as __value,\n   IFNULL(el.location_name, IFNULL((\n   select\n      name \n   from\n      corptools_mapsystem \n   where\n      system_id = assets.location_id), concat(\"Unknown (\", assets.location_id, \")\"))) as __text\n   from\n      corptools_characterasset assets \n      join\n         corptools_characteraudit ac \n         on assets.character_id = ac.id \n      join\n         corptools_eveitemtype it \n         on assets.type_id = it.type_id \n      left outer join\n         corptools_evelocation el \n         on assets.location_name_id = el.location_id \n   where\n      it.group_id in \n      (\n          $Groups\n      )\n      and ac.last_update_assets >= NOW() - INTERVAL 48 HOUR \n   order by\n      2\n",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {},
+          "datasource": {
+            "type": "mysql",
+            "uid": "${DS_MYSQL}"
+          },
+          "definition": "SELECT\n  name AS __text,\n  type_id AS __value\nFROM corptools_eveitemtype\nWHERE\n  group_id in ($Groups)\nORDER BY name",
+          "hide": 0,
+          "includeAll": true,
+          "multi": true,
+          "name": "Hulls",
+          "options": [],
+          "query": "SELECT\n  name AS __text,\n  type_id AS __value\nFROM corptools_eveitemtype\nWHERE\n  group_id in ($Groups)\nORDER BY name",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        }
+      ]
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Asset Location Search",
+    "uid": "Jo_lTi0Mz",
+    "version": 3,
+    "weekStart": ""
+  }

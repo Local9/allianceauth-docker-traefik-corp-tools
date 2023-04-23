@@ -1,0 +1,193 @@
+{
+    "__inputs": [
+      {
+        "name": "DS_MYSQL",
+        "label": "MySQL",
+        "description": "",
+        "type": "datasource",
+        "pluginId": "mysql",
+        "pluginName": "MySQL"
+      }
+    ],
+    "__elements": {},
+    "__requires": [
+      {
+        "type": "grafana",
+        "id": "grafana",
+        "name": "Grafana",
+        "version": "9.3.2"
+      },
+      {
+        "type": "datasource",
+        "id": "mysql",
+        "name": "MySQL",
+        "version": "1.0.0"
+      },
+      {
+        "type": "panel",
+        "id": "table",
+        "name": "Table",
+        "version": ""
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${DS_MYSQL}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Balance"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "currencyUSD"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Characters"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 205
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 23,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "options": {
+          "footer": {
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": []
+        },
+        "pluginVersion": "9.3.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "mysql",
+              "uid": "${DS_MYSQL}"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "select \r\n  (\r\n    SELECT \r\n      mc.character_name \r\n    FROM \r\n      `authentication_characterownership` \r\n      INNER JOIN `eveonline_evecharacter` ON (\r\n        `authentication_characterownership`.`character_id` = `eveonline_evecharacter`.`id`\r\n      ) \r\n      INNER JOIN authentication_userprofile up ON up.user_id = authentication_characterownership.user_id \r\n      INNER JOIN eveonline_evecharacter mc ON up.main_character_id = mc.id \r\n    WHERE \r\n      `eveonline_evecharacter`.`id` = ec.id \r\n    LIMIT \r\n      1\r\n  ) as \"Main\", \r\n  GROUP_CONCAT(ec.character_name SEPARATOR \", \") as \"Characters\", \r\n  SUM(ac.balance) as \"Balance\"\r\nfrom \r\n  eveonline_evecharacter ec  \r\n  join corptools_characteraudit ac on ac.character_id = ec.id\r\n\r\nWHERE\r\n  ac.last_update_wallet >= NOW() - INTERVAL 48 HOUR \r\ngroup by \r\n  1\r\norder by \r\n  SUM(ac.balance) DESC",
+            "refId": "A",
+            "select": [
+              [
+                {
+                  "params": [
+                    "id"
+                  ],
+                  "type": "column"
+                }
+              ]
+            ],
+            "table": "corptools_corporationwalletjournalentry",
+            "timeColumn": "date",
+            "timeColumnType": "timestamp",
+            "where": [
+              {
+                "name": "$__timeFilter",
+                "params": [],
+                "type": "macro"
+              }
+            ]
+          }
+        ],
+        "title": "V0LTA",
+        "type": "table"
+      }
+    ],
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Member ISK Overview",
+    "uid": "I2cDzLWnz",
+    "version": 5,
+    "weekStart": ""
+  }
