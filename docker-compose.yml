@@ -45,12 +45,8 @@ services:
       # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
       - --entrypoints.https.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS
       - --entryPoints.traefik.address=:8080
-      # - --entryPoints.ping.address=:8081
       - --api=true
-      #- --api.insecure=true
       - --api.dashboard=true
-      #- --ping=true
-      # - --serversTransport.insecureSkipVerify=true
       - --log=true
       - --log.filePath=/logs/traefik.log
       - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
@@ -59,12 +55,8 @@ services:
       - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
       - --accessLog.filters.statusCodes=204-299,400-499,500-599
       - --providers.docker=true
-      # - --providers.docker.endpoint=unix:///var/run/docker.sock # Use Docker Socket Proxy instead for improved security
       - --providers.docker.endpoint=tcp://socket-proxy:2375
-      # Automatically set Host rule for services
-      # - --providers.docker.defaultrule=Host(`{{ index .Labels "com.docker.compose.service" }}.$DOMAIN`)
       - --providers.docker.exposedByDefault=false
-      # - --entrypoints.https.http.middlewares=chain-oauth@file
       - --entrypoints.https.http.tls.options=tls-opts@file
       # Add dns-cloudflare as default certresolver for all services. Also enables TLS and no need to specify on individual services
       - --entrypoints.https.http.tls.certresolver=dns-cloudflare
@@ -73,7 +65,6 @@ services:
       - --providers.docker.network=t2_proxy
       - --providers.docker.swarmMode=false
       - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
-      # - --providers.file.filename=/path/to/file # Load dynamic configuration from a file
       - --providers.file.watch=true # Only works on top level files in the rules folder
       #- --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
       - --certificatesResolvers.dns-cloudflare.acme.email=$CLOUDFLARE_EMAIL
@@ -83,7 +74,6 @@ services:
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
       - --metrics.prometheus=true
       - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
-      #- --entryPoints.metrics.address=8082
     networks:
       t2_proxy:
         ipv4_address: 192.168.90.254 
@@ -99,7 +89,6 @@ services:
         mode: host
     volumes:
       - ${PWD}/conf/traefik2/rules/:/rules # file provider directory
-      # - /var/run/docker.sock:/var/run/docker.sock:ro # Use Docker Socket Proxy instead for improved security
       - ${PWD}/conf/traefik2/acme/acme.json:/acme.json # cert location - you must touch this file and change permissions to 600
       - ${PWD}/conf/traefik2/logs/:/logs # for fail2ban or crowdsec
       - ${PWD}/conf/.htpasswd:/conf/.htpasswd:ro
@@ -122,13 +111,8 @@ services:
       - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN`)"
       ## Services - API
       - "traefik.http.routers.traefik-rtr.service=api@internal"
-      ## Healthcheck/ping
-      #- "traefik.http.routers.ping.rule=Host(`traefik.$DOMAIN`) && Path(`/ping`)"
-      #- "traefik.http.routers.ping.tls=true"
-      #- "traefik.http.routers.ping.service=ping@internal"
       ## Middlewares
       - "traefik.http.routers.traefik-rtr.middlewares=chain-auth@file"
-
 
   # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
   socket-proxy:
@@ -180,7 +164,7 @@ services:
     volumes:
       - ./mysql-data:/var/lib/mysql
       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
-      #- ./import.sql:/docker-entrypoint-initdb.d/import.sql
+      #- ./import.sql:/docker-entrypoint-initdb.d/import.sql  #If importing from another install create SQLL file and remove the line above
     environment:
       - MYSQL_ROOT_PASSWORD=${AA_DB_ROOT_PASSWORD?err}
     healthcheck:
@@ -333,29 +317,6 @@ services:
     networks:
       - t2_proxy
       - socket_proxy
-
-  dozzle:
-    <<: *common-keys-external # See EXTENSION FIELDS at the top
-    image: amir20/dozzle:latest
-    container_name: dozzle
-    networks:
-      - t2_proxy
-      - socket_proxy
-    environment:
-      DOZZLE_LEVEL: info
-      DOZZLE_TAILSIZE: 300
-      DOZZLE_FILTER: "status=running"
-      DOCKER_HOST: tcp://socket-proxy:2375
-    labels:
-      - "traefik.enable=true"
-      ## HTTP Routers
-      - "traefik.http.routers.dozzle-rtr.entrypoints=https"
-      - "traefik.http.routers.dozzle-rtr.rule=Host(`dozzle.$DOMAIN`)"
-      ## Middlewares
-      - "traefik.http.routers.dozzle-rtr.middlewares=chain-auth@file"
-      ## HTTP Services
-      - "traefik.http.routers.dozzle-rtr.service=dozzle-svc"
-      - "traefik.http.services.dozzle-svc.loadbalancer.server.port=8080"
 
 volumes:
     redis-data:
