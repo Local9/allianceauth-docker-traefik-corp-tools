@@ -1,7 +1,8 @@
 .env
 setup.sql
-conf/traefik2/acme/**
-conf/traefik2/logs/**
+conf/traefik2/acme/acme.json
+conf/traefik2/logs/access.log
+conf/traefik2/logs/traefik.log
 mysql-data/**
 conf/.htpasswd
 .vagrant*

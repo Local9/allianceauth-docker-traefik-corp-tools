@@ -76,7 +76,7 @@ INSTALLED_APPS += [
     #'allianceauth.hrapplications',
 
     # https://allianceauth.readthedocs.io/en/latest/features/services/index.html
-    'allianceauth.services.modules.discord',
+    #'allianceauth.services.modules.discord',
     #'allianceauth.services.modules.discourse',
     # 'allianceauth.services.modules.ips4',
     # 'allianceauth.services.modules.openfire',

@@ -203,6 +203,7 @@ services:
       - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
       - static-volume:/var/www/myauth/static
     depends_on:
+      - auth_mysql
       - allianceauth
     labels:
       - "traefik.enable=true"
@@ -272,6 +273,7 @@ services:
       - grafana-data:/var/lib/grafana
     environment:
       GF_INSTALL_PLUGINS: grafana-piechart-panel,grafana-clock-panel,grafana-simple-json-datasource
+      GF_AUTH_DATABASE_PASSWORD: ${GRAFANA_DB_PASSWORD}
     labels:
       - "traefik.enable=true"
       ## HTTP Routers
@@ -310,21 +312,6 @@ services:
       - "traefik.http.routers.mumble-rtr.service=mumble-svc"
       - "traefik.http.services.mumble-svc.loadbalancer.server.port=64738"
 
-  # WhoAmI - For Testing and Troubleshooting
-  whoami:
-    <<: *common-keys-external # See EXTENSION FIELDS at the top
-    image: traefik/whoami
-    container_name: whoami
-    labels:
-      - "traefik.enable=true"
-      ## HTTP Routers
-      - "traefik.http.routers.whoami-rtr.entrypoints=https"
-      - "traefik.http.routers.whoami-rtr.rule=Host(`whoami.$DOMAIN`)"
-      ## Middlewares
-      - "traefik.http.routers.whoami-rtr.middlewares=chain-no-auth@file"
-      ## HTTP Services
-      - "traefik.http.routers.whoami-rtr.service=whoami-svc"
-      - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"
 
   loki:
     <<: *common-keys-external # See EXTENSION FIELDS at the top
