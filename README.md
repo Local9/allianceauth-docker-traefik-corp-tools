@@ -1,3 +1,8 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
@@ -139,8 +144,6 @@ _NOTE: If you specify a version of allianceauth in your `requirements.txt` in a 
 1. Update the versions in your `requirements.txt` file
 1. Run `docker-compose build`
 1. Run `docker-compose --env-file=.env up -d`
-
-```
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
