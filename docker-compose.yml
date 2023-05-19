@@ -88,10 +88,10 @@ services:
         protocol: tcp
         mode: host
     volumes:
-      - ${PWD}/conf/traefik2/rules/:/rules # file provider directory
-      - ${PWD}/conf/traefik2/acme/acme.json:/acme.json # cert location - you must touch this file and change permissions to 600
-      - ${PWD}/conf/traefik2/logs/:/logs # for fail2ban or crowdsec
-      - ${PWD}/conf/.htpasswd:/conf/.htpasswd:ro
+      - ./conf/traefik2/rules/:/rules # file provider directory
+      - ./conf/traefik2/acme/acme.json:/acme.json # cert location - you must touch this file and change permissions to 600
+      - ./conf/traefik2/logs/:/logs # for fail2ban or crowdsec
+      - ./conf/.htpasswd:/conf/.htpasswd:ro
     environment:
       - TZ=Europe/London
       - CF_API_EMAIL=$CLOUDFLARE_EMAIL
