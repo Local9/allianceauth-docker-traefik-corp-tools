@@ -59,9 +59,9 @@ htpasswd -cb conf/.htpasswd admin ${htpassword}
 read -p "Enter the Discord Guild/Server ID: " guildid
 sed -i.bak 's/%GUILD_ID%/'${guildid}'/g' .env
 read -p "Enter the Discord Bot App ID: " discordappid
-sed -i.bak 's/%DISCORD_APP_ID%/'${discordappidi}'/g' .env
+sed -i.bak 's/%DISCORD_APP_ID%/'${discordappid}'/g' .env
 read -p "Enter the Discord Bot App Secret: " discordappsecret
-sed -i.bak 's/%DISCORD_APP_SECRET%/'${discordappsecreti}'/g' .env
+sed -i.bak 's/%DISCORD_APP_SECRET%/'${discordappsecret}'/g' .env
 read -p "Enter the Discord Bot Token: " discordbottoken
 sed -i.bak 's/%DISCORD_BOT_TOKEN%/'${discordbottoken}'/g' .env
 
