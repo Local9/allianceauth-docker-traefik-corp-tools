@@ -17,7 +17,11 @@ DATABASES["default"] = {
     "PASSWORD": os.environ.get("AA_DB_PASSWORD"),
     "HOST": os.environ.get("AA_DB_HOST"),
     "PORT": os.environ.get("AA_DB_PORT", "3306"),
+    "OPTIONS": {
+        "charset": os.environ.get("AA_DB_CHARSET", "utf8mb4")
+    }
 }
+
 
 # Register an application at https://developers.eveonline.com for Authentication
 # & API Access and fill out these settings. Be sure to set the callback URL
