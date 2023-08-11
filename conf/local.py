@@ -84,14 +84,13 @@ INSTALLED_APPS += [
     #'allianceauth.services.modules.discourse',
     # 'allianceauth.services.modules.ips4',
     # 'allianceauth.services.modules.openfire',
+    
     'allianceauth.services.modules.mumble',
-    # An example of running mumble with authenticator in docker can be found here
-    # https://github.com/Solar-Helix-Independent-Transport/allianceauth-docker-mumble
     # 'allianceauth.services.modules.phpbb3',
     # 'allianceauth.services.modules.smf',
-    #'allianceauth.services.modules.teamspeak3',
+    # 'allianceauth.services.modules.teamspeak3',
     # 'allianceauth.services.modules.xenforo',
-    #'allianceauth.eveonline.autogroups',
+    # 'allianceauth.eveonline.autogroups',
     
     # Proms Client
     'aaprom',
@@ -145,7 +144,7 @@ CT_CHAR_PAUSE_CONTRACTS = True
 
 
 
-## LOKI STUFF
+#### loki shit
 
 ### Override the defaults from base.py
 LOGGING = {
@@ -192,20 +191,20 @@ LOGGING = {
     }
 }
 
-###  LOKI Specific settings
+
 LOGGING['formatters']['loki'] = {
-    'class': 'allianceauth-loki-logging.LokiFormatter'  # required
+    'class': 'allianceauth_loki_logging.LokiFormatter'  # required
 }
 
 print(f"Configuring Loki Log job to: {os.path.basename(os.sys.argv[0])}")
 
 LOGGING['handlers']['loki'] = {
     'level': 'DEBUG' if DEBUG else 'INFO',  # Required # We are auto setting the log level to only record debug when in debug.
-    'class': 'allianceauth-loki-logging.LokiHandler',  # Required
+    'class': 'allianceauth_loki_logging.LokiHandler',  # Required
     'formatter': 'loki',  #Required
     'timeout': 1,  # Post request timeout, default is 0.5. Optional
     # Loki url. Defaults to localhost. Optional.
-    'url': 'http://loki:3100/loki/api/v1/push',
+    'url': 'http://localhost:3100/loki/api/v1/push',
     # Extra tags / labels to attach to the log. Optional, but usefull to differentiate instances.
     'tags': {"job":os.path.basename(os.sys.argv[0])}, # Auto set the job to differentiate between celery, gunicorn, manage.py etc.
     # Push mode. Can be 'sync' or 'thread'. Sync is blocking, thread is non-blocking. Defaults to sync. Optional.
