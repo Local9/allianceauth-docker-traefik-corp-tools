@@ -32,6 +32,33 @@ x-common-keys-internal: &common-keys-internal
     - no-new-privileges:true
   restart: always
 
+x-allianceauth-base: &allianceauth-base
+   container_name: allianceauth
+   networks:
+     - t2_proxy
+     - socket_proxy
+   #image: ${AA_DOCKER_TAG?err}
+   build:
+     context: .
+     dockerfile: Dockerfile
+     args:
+       AA_DOCKER_TAG: ${AA_DOCKER_TAG?err}
+   env_file:
+     - ./.env
+   volumes:
+     - ./conf/local.py:/home/allianceauth/myauth/myauth/settings/local.py
+     - ./conf/celery.py:/home/allianceauth/myauth/myauth/celery.py
+     - ./conf/prom_exporter.py:/home/allianceauth/myauth/prom_exporter.py
+     - ./templates:/home/allianceauth/myauth/myauth/templates/
+     - static-volume:/var/www/myauth/static
+   depends_on:
+     - redis
+     - auth_mysql
+  security_opt:
+    - no-new-privileges:true
+  working_dir: /home/allianceauth/myauth/
+  stop_grace_period: 10m
+
 services:
   traefik:
     <<: *common-keys-external # See EXTENSION FIELDS at the top
@@ -204,31 +231,46 @@ services:
     command: redis-server
     volumes:
       - "redis-data:/data"
+      
+  allianceauth_gunicorn:
+    ports:
+      - 8000:8000
+    container_name: allianceauth_gunicorn
+    <<: [*allianceauth-base]
+    entrypoint: [
+      "/opt/venv/bin/gunicorn",
+      "myauth.wsgi",
+      "--bind=0.0.0.0:8000",
+      "--workers=3",
+      "--timeout=120",
+      "--max-requests=500",
+      "--max-requests-jitter=50"
+    ]
 
-  allianceauth:
-    <<: *common-keys-internal # See EXTENSION FIELDS at the top
-    container_name: allianceauth
-    networks:
-      - t2_proxy
-      - socket_proxy
-    #image: ${AA_DOCKER_TAG?err}
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        AA_DOCKER_TAG: ${AA_DOCKER_TAG?err}
-    env_file:
-      - ./.env
-    volumes:
-      - ./conf/local.py:/home/allianceauth/myauth/myauth/settings/local.py
-      - ./conf/celery.py:/home/allianceauth/myauth/myauth/celery.py
-      - ./conf/prom_exporter.py:/home/allianceauth/myauth/prom_exporter.py
-      - ./templates:/home/allianceauth/myauth/myauth/templates/
-      - ./conf/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
-      - static-volume:/var/www/myauth/static
-    depends_on:
-      - redis
-      - auth_mysql
+  allianceauth_beat:
+    container_name: auth_worker_beat
+    <<: [*allianceauth-base]
+    entrypoint: [
+      "/opt/venv/bin/celery",
+      "-A",
+      "myauth",
+      "beat"
+    ]
+
+  allianceauth_worker:
+    <<: [*allianceauth-base]
+    entrypoint: [
+      "/opt/venv/bin/celery",
+      "-A",
+      "myauth",
+      "worker",
+      "--pool=threads",
+      "--concurrency=5",
+      "-n",
+      "worker_%n"
+    ]
+    deploy:
+      replicas: 2
 
   prometheus:
     <<: *common-keys-internal # See EXTENSION FIELDS at the top
