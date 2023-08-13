@@ -114,7 +114,7 @@ There are a handful of ways to add packages:
 * Building a custom Docker image (recommended, and less scary than it sounds!)
 
 ### Using a custom docker image
-Using a custom docker image is the preferred approach, as it gives you the stability of packages only changing when you tell them to, along with packages not having to be downloaded every time your container restarts
+This stack is using a custom docker image and is the preferred approach, as it gives you the stability of packages only changing when you tell them to, along with packages not having to be downloaded every time your container restarts
 
 1. Add each additional package that you want to install to a single line in `conf/requirements.txt`. It is recommended, but not required, that you include a version number as well. This will keep your packages from magically updating. You can lookup packages on https://package.wiki, and copy everything after `pip install` from the top of the page to use the most recent version. It should look something like `allianceauth-signal-pings==0.0.7`. Every entry in this file should be on a separate line
 1. In `docker-compose.yml`, comment out the `image` line under `allianceauth` (line 36... ish) and uncomment the `build` section

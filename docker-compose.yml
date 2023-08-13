@@ -1,4 +1,8 @@
 version: '3.8'
+
+########################### NETWORKS
+# There is no need to create any networks outside this docker-compose file.
+
 networks:
   t2_proxy:
     name: t2_proxy
@@ -33,31 +37,50 @@ x-common-keys-internal: &common-keys-internal
   restart: always
 
 x-allianceauth-base: &allianceauth-base
-   container_name: allianceauth
-   networks:
-     - t2_proxy
-     - socket_proxy
-   #image: ${AA_DOCKER_TAG?err}
-   build:
-     context: .
-     dockerfile: Dockerfile
-     args:
-       AA_DOCKER_TAG: ${AA_DOCKER_TAG?err}
-   env_file:
-     - ./.env
-   volumes:
-     - ./conf/local.py:/home/allianceauth/myauth/myauth/settings/local.py
-     - ./conf/celery.py:/home/allianceauth/myauth/myauth/celery.py
-     - ./conf/prom_exporter.py:/home/allianceauth/myauth/prom_exporter.py
-     - ./templates:/home/allianceauth/myauth/myauth/templates/
-     - static-volume:/var/www/myauth/static
-   depends_on:
-     - redis
-     - auth_mysql
+  container_name: allianceauth
+  networks:
+    - t2_proxy
+    - socket_proxy
+  #image: ${AA_DOCKER_TAG?err}
+  build:
+    context: .
+    dockerfile: Dockerfile
+    args:
+      AA_DOCKER_TAG: ${AA_DOCKER_TAG?err}
+  env_file:
+    - ./.env
+  volumes:
+  # Lets add all the files from the conf folder that can be edited to make changes we use acrsso plugs/auth
+    - ./conf/local.py:/home/allianceauth/myauth/myauth/settings/local.py
+    - ./conf/celery.py:/home/allianceauth/myauth/myauth/celery.py
+    - ./conf/prom_exporter.py:/home/allianceauth/myauth/prom_exporter.py
+    - ./conf/urls.py:/home/allianceauth/myauth/myauth/urls.py
+  # Because we like todo templte overrides every now and then lets map this folder so that we can see this
+    - ./templates:/home/allianceauth/myauth/myauth/templates/
+  #We like to check for the health of the worker containr
+    - ./scripts/memory_check.sh:/memory_check.sh
+    - static-volume:/var/www/myauth/static
+  depends_on:
+    - redis
+    - auth_mysql
   security_opt:
     - no-new-privileges:true
   working_dir: /home/allianceauth/myauth/
   stop_grace_period: 10m
+
+x-allianceauth-health-check: &allianceauth-health-checks
+  healthcheck:
+    test: [
+      "CMD",
+      "/memory_check.sh",
+      "500000000"
+    ]
+    interval: 60s
+    timeout: 10s
+    retries: 3
+    start_period: 5m
+  labels:
+    - "autoheal=true"
 
 services:
   traefik:
@@ -142,6 +165,10 @@ services:
       - "traefik.http.routers.traefik-rtr.middlewares=chain-auth@file"
 
   # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
+  # This is a security-enhanced proxy for the Docker Socket.
+  # Giving access to your Docker socket could mean giving root access to your host, or even to your whole swarm, 
+  # but some services require hooking into that socket to react to events, etc. 
+  # Using this proxy lets you block anything you consider those services should not do.
   socket-proxy:
     <<: *common-keys-internal # See EXTENSION FIELDS at the top
     container_name: socket-proxy
@@ -191,7 +218,8 @@ services:
     volumes:
       - ./mysql-data:/var/lib/mysql
       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
-      #- ./import.sql:/docker-entrypoint-initdb.d/import.sql  #If importing from another install create SQLL file and remove the line above
+      # If importing from another install create SQL file and remove the line above and uncomment below with the initial import you can then comment out once imported
+      #- ./import.sql:/docker-entrypoint-initdb.d/import.sql 
     environment:
       - MYSQL_ROOT_PASSWORD=${AA_DB_ROOT_PASSWORD?err}
     healthcheck:
@@ -231,7 +259,9 @@ services:
     command: redis-server
     volumes:
       - "redis-data:/data"
-      
+
+############################# START AUTH CONTAINERS
+
   allianceauth_gunicorn:
     ports:
       - 8000:8000
@@ -258,7 +288,7 @@ services:
     ]
 
   allianceauth_worker:
-    <<: [*allianceauth-base]
+    <<: [*allianceauth-base, *allianceauth-health-checks]
     entrypoint: [
       "/opt/venv/bin/celery",
       "-A",
@@ -271,6 +301,10 @@ services:
     ]
     deploy:
       replicas: 2
+
+############################# END AUTH CONTAINERS
+
+############################# START METRIC CONTAINERS
 
   prometheus:
     <<: *common-keys-internal # See EXTENSION FIELDS at the top
@@ -307,6 +341,10 @@ services:
       ## HTTP Services
       - "traefik.http.routers.grafana-rtr.service=grafana-svc"
       - "traefik.http.services.grafana-svc.loadbalancer.server.port=3000"
+
+############################# END METRIC CONTAINERS
+
+############################# START PRELOADED MODULE CONTAINERS
 
   mumble_auth:
     <<: *common-keys-external # See EXTENSION FIELDS at the top
@@ -359,6 +397,8 @@ services:
     networks:
       - t2_proxy
       - socket_proxy
+
+############################# END PRELOADED MODULE CONTAINERS
 
 volumes:
     redis-data:
