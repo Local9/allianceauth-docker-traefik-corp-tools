@@ -48,3 +48,13 @@ ruler:
 # If you would like to disable reporting, uncomment the following lines:
 analytics:
   reporting_enabled: false
+
+limits_config:
+  max_streams_per_user: 0
+  max_global_streams_per_user: 0
+  retention_period: 10d # Keep 10 days
+
+compactor:
+        delete_request_cancel_period: 10m # don't wait 24h before processing the delete_request
+        retention_enabled: true # actually do the delete
+        retention_delete_delay: 2h # wait 2 hours before actually deleting stuff
