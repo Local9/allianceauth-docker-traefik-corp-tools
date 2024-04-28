@@ -37,7 +37,6 @@ x-common-keys-internal: &common-keys-internal
   restart: always
 
 x-allianceauth-base: &allianceauth-base
-  container_name: allianceauth
   networks:
     - t2_proxy
     - socket_proxy
@@ -261,7 +260,7 @@ services:
   allianceauth_gunicorn:
     ports:
       - 8000:8000
-    # container_name: allianceauth
+    container_name: allianceauth
     <<: [*allianceauth-base]
     entrypoint: ["/opt/venv/bin/gunicorn", "myauth.wsgi", "--bind=0.0.0.0:8000", "--workers=3", "--timeout=120", "--max-requests=500", "--max-requests-jitter=50"]
 
