@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 ########################### NETWORKS
 # There is no need to create any networks outside this docker-compose file.
@@ -50,14 +50,14 @@ x-allianceauth-base: &allianceauth-base
   env_file:
     - ./.env
   volumes:
-  # Lets add all the files from the conf folder that can be edited to make changes we use acrsso plugs/auth
+    # Lets add all the files from the conf folder that can be edited to make changes we use acrsso plugs/auth
     - ./conf/local.py:/home/allianceauth/myauth/myauth/settings/local.py
     - ./conf/celery.py:/home/allianceauth/myauth/myauth/celery.py
     - ./conf/prom_exporter.py:/home/allianceauth/myauth/prom_exporter.py
     - ./conf/urls.py:/home/allianceauth/myauth/myauth/urls.py
-  # Because we like todo templte overrides every now and then lets map this folder so that we can see this
+    # Because we like todo templte overrides every now and then lets map this folder so that we can see this
     - ./templates:/home/allianceauth/myauth/myauth/templates/
-  #We like to check for the health of the worker containr
+    #We like to check for the health of the worker containr
     - ./scripts/memory_check.sh:/memory_check.sh
     - static-volume:/var/www/myauth/static
   depends_on:
@@ -70,11 +70,7 @@ x-allianceauth-base: &allianceauth-base
 
 x-allianceauth-health-check: &allianceauth-health-checks
   healthcheck:
-    test: [
-      "CMD",
-      "/memory_check.sh",
-      "500000000"
-    ]
+    test: ["CMD", "/memory_check.sh", "500000000"]
     interval: 60s
     timeout: 10s
     retries: 3
@@ -126,7 +122,7 @@ services:
       - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
     networks:
       t2_proxy:
-        ipv4_address: 192.168.90.254 
+        ipv4_address: 192.168.90.254
       socket_proxy:
     ports:
       - target: 80
@@ -146,7 +142,7 @@ services:
       - TZ=Europe/London
       - CF_API_EMAIL=$CLOUDFLARE_EMAIL
       - CF_API_KEY=$CLOUDFLARE_API_KEY
-      - DOMAIN # Passing the domain name to traefik container to be able to use the variable in rules. 
+      - DOMAIN # Passing the domain name to traefik container to be able to use the variable in rules.
     labels:
       #- "autoheal=true"
       - "traefik.enable=true"
@@ -157,7 +153,7 @@ services:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       # HTTP Routers
       - "traefik.http.routers.traefik-rtr.entrypoints=https"
-      ## This install comes with a basic auth - comment out below if you wish to hide the Trafik dashboard 
+      ## This install comes with a basic auth - comment out below if you wish to hide the Trafik dashboard
       - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN`)"
       ## Services - API
       - "traefik.http.routers.traefik-rtr.service=api@internal"
@@ -166,8 +162,8 @@ services:
 
   # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
   # This is a security-enhanced proxy for the Docker Socket.
-  # Giving access to your Docker socket could mean giving root access to your host, or even to your whole swarm, 
-  # but some services require hooking into that socket to react to events, etc. 
+  # Giving access to your Docker socket could mean giving root access to your host, or even to your whole swarm,
+  # but some services require hooking into that socket to react to events, etc.
   # Using this proxy lets you block anything you consider those services should not do.
   socket-proxy:
     <<: *common-keys-internal # See EXTENSION FIELDS at the top
@@ -200,14 +196,14 @@ services:
       - EXEC=0
       - IMAGES=1
       - INFO=1
-      - NETWORKS=1 
+      - NETWORKS=1
       - NODES=0
       - PLUGINS=0
       - SERVICES=1
       - SESSION=0
       - SWARM=0
       - SYSTEM=0
-      - TASKS=1 
+      - TASKS=1
       - VOLUMES=1
 
   auth_mysql:
@@ -219,7 +215,7 @@ services:
       - ./mysql-data:/var/lib/mysql
       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
       # If importing from another install create SQL file and remove the line above and uncomment below with the initial import you can then comment out once imported
-      #- ./import.sql:/docker-entrypoint-initdb.d/import.sql 
+      #- ./import.sql:/docker-entrypoint-initdb.d/import.sql
     environment:
       - MYSQL_ROOT_PASSWORD=${AA_DB_ROOT_PASSWORD?err}
     healthcheck:
@@ -234,13 +230,13 @@ services:
     container_name: nginx
     image: nginx:1.21
     volumes:
-      - /etc/localtime:/etc/localtime:ro  
+      - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
       - static-volume:/var/www/myauth/static
     depends_on:
       - auth_mysql
-      - allianceauth
+      - allianceauth_gunicorn
     labels:
       - "traefik.enable=true"
       ## HTTP Routers
@@ -260,58 +256,36 @@ services:
     volumes:
       - "redis-data:/data"
 
-############################# START AUTH CONTAINERS
+  ############################# START AUTH CONTAINERS
 
   allianceauth_gunicorn:
     ports:
       - 8000:8000
     container_name: allianceauth_gunicorn
     <<: [*allianceauth-base]
-    entrypoint: [
-      "/opt/venv/bin/gunicorn",
-      "myauth.wsgi",
-      "--bind=0.0.0.0:8000",
-      "--workers=3",
-      "--timeout=120",
-      "--max-requests=500",
-      "--max-requests-jitter=50"
-    ]
+    entrypoint: ["/opt/venv/bin/gunicorn", "myauth.wsgi", "--bind=0.0.0.0:8000", "--workers=3", "--timeout=120", "--max-requests=500", "--max-requests-jitter=50"]
 
   allianceauth_beat:
     container_name: auth_worker_beat
     <<: [*allianceauth-base]
-    entrypoint: [
-      "/opt/venv/bin/celery",
-      "-A",
-      "myauth",
-      "beat"
-    ]
+    entrypoint: ["/opt/venv/bin/celery", "-A", "myauth", "beat"]
 
   allianceauth_worker:
     <<: [*allianceauth-base, *allianceauth-health-checks]
-    entrypoint: [
-      "/opt/venv/bin/celery",
-      "-A",
-      "myauth",
-      "worker",
-      "--pool=threads",
-      "--concurrency=5",
-      "-n",
-      "worker_%n"
-    ]
+    entrypoint: ["/opt/venv/bin/celery", "-A", "myauth", "worker", "--pool=threads", "--concurrency=5", "-n", "worker_%n"]
     deploy:
       replicas: 2
 
-############################# END AUTH CONTAINERS
+  ############################# END AUTH CONTAINERS
 
-############################# START METRIC CONTAINERS
+  ############################# START METRIC CONTAINERS
 
   prometheus:
     <<: *common-keys-internal # See EXTENSION FIELDS at the top
     container_name: prometheus
     image: prom/prometheus:v2.21.0
     ports:
-      - '${PROM_PORT:-9000}:9090'
+      - "${PROM_PORT:-9000}:9090"
     volumes:
       - ./conf/prometheus:/etc/prometheus
       - prometheus-data:/prometheus
@@ -342,9 +316,9 @@ services:
       - "traefik.http.routers.grafana-rtr.service=grafana-svc"
       - "traefik.http.services.grafana-svc.loadbalancer.server.port=3000"
 
-############################# END METRIC CONTAINERS
+  ############################# END METRIC CONTAINERS
 
-############################# START PRELOADED MODULE CONTAINERS
+  ############################# START PRELOADED MODULE CONTAINERS
 
   mumble_auth:
     <<: *common-keys-external # See EXTENSION FIELDS at the top
@@ -358,8 +332,8 @@ services:
       - ./.env
     restart: unless-stopped
     ports:
-        - 64738:64738
-        - 64738:64738/udp
+      - 64738:64738
+      - 64738:64738/udp
     volumes:
       - mumble-data:/data
     labels:
@@ -401,8 +375,8 @@ services:
 ############################# END PRELOADED MODULE CONTAINERS
 
 volumes:
-    redis-data:
-    static-volume:
-    prometheus-data:
-    grafana-data:
-    mumble-data:
+  redis-data:
+  static-volume:
+  prometheus-data:
+  grafana-data:
+  mumble-data:
