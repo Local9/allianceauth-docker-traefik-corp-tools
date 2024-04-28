@@ -270,7 +270,6 @@ services:
     entrypoint: ["/opt/venv/bin/celery", "-A", "myauth", "beat"]
 
   allianceauth_worker:
-    container_name: allianceauth
     <<: [*allianceauth-base, *allianceauth-health-checks]
     entrypoint: ["/opt/venv/bin/celery", "-A", "myauth", "worker", "--pool=threads", "--concurrency=5", "-n", "worker_%n"]
     deploy:
